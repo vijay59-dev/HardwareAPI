@@ -1,0 +1,176 @@
+<html>
+<head>
+<meta name="twocolumns" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 100%;
+}
+.left {
+    width: 30%;
+}
+.right {
+    width: 70%;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.center1 {
+  margin: 0;
+  position: absolute;
+  top: 60%;
+  left: 15%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.center2 {
+  margin: 0;
+  position: absolute;
+  top: 55%;
+  left: 70%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.buttonoption{
+	text-align: center;	
+  border: none;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+table, th, td {
+  border:1px solid black;
+}
+
+</style>
+<script>
+   function myFunction(){
+   document.getElementById('output').innerHTML = "";
+   }
+</script>
+</head>
+<body>
+
+<h1 style= "text-align:center; font-family:Arial, Helvetica, sans-serif">How's your PC working?</h1>
+
+<div class="row">
+  <div class="column left" style = "background-color:#504f4f;">
+    <h2 class= "clear: center" style= "color: white; font-family:Arial, Helvetica, sans-serif">See the options...</h2>
+    <p style= "color: white; font-family:Arial, Helvetica, sans-serif">What do you want to know?</p>
+		<div class= "btn-text-left center1">
+		    <button class="buttonoption" style=" font-family:Arial, Helvetica, sans-serif" onclick="window.location.href='{% url 'cpuDetails' %}'">CPU</button>
+			<br><br><button class="buttonoption" style=" font-family:Arial, Helvetica, sans-serif" onclick="window.location.href='{% url 'ramDetails' %}'">Memory RAM</button>
+			<br><br><button class="buttonoption" style=" font-family:Arial, Helvetica, sans-serif" onclick="window.location.href='{% url 'diskDetails' %}'">Hard Disk</button>
+			<br><br><button class="buttonoption" style=" font-family:Arial, Helvetica, sans-serif" onclick="window.location.href='{% url 'batteryDetails' %}'">Battery</button>
+			<br><br><button type="reset" value="reset" style=" font-family:Arial, Helvetica, sans-serif" class="buttonoption" onclick="myFunction()">Clear all</button>
+		</div>
+	</div>
+  
+  <div class="column right" style = "background-color:#728FCE;" id="output">
+    <h2 class= "clear: center" style= "color: white; font-family:Arial, Helvetica, sans-serif">Output:</h2> 
+	  {% if cpuDetails %}
+         <ol class="center2" style="font-size: 20px;">
+             <h6> System : {{cpuDetails.systemInformation.system}}</h6>
+		     <h6> Node Name : {{cpuDetails.systemInformation.nodeName}}</h6>
+             <h6> Release : {{cpuDetails.systemInformation.release}}</h6>
+             <h6> Version : {{cpuDetails.systemInformation.version}}</h6>
+             <h6> Machine : {{cpuDetails.systemInformation.machine}}</h6>
+             <h6> Processor : {{cpuDetails.systemInformation.processor}}</h6>
+             <h6> Number of PhysicalCores : {{cpuDetails.cpuFunction.physicalCores}}</h6>
+             <h6> total number of cores : {{cpuDetails.cpuFunction.totalCores}}</h6>
+             <h6> CPU Frequency" : {{cpuDetails.cpuFunction.cpuFrequency}}</h6>
+             <h6> Number of CPU : {{cpuDetails.cpuFunction.cpuTotal}}</h6>
+             <h6> CPu Per Core : {{cpuDetails.cpuFunction.cpuPerCore}}</h6>
+         </ol>
+      {% elif diskDetails %}
+          <ol class= "center2" style="font-size: 20px">
+            <table style="width:100%">
+              <tr>
+                <th>Mount Point</th>
+                <th>Total space</th>
+                <th>Used space</th>
+                <th>Permission</th>
+                <th>File System</th>
+              </tr>
+              {% for drive in diskDetails.diskPartitions %}
+              <tr>
+                  <td>{{drive.mountpoint}}</td>
+                  <td>{{drive.total}}</td>
+                  <td>{{drive.used}}</td>
+                  <td>{{drive.permission}}</td>
+                  <td>{{drive.fileSystem}}</td>
+              </tr>
+              {% endfor %}
+            </table>
+               
+              <h4>Total Disk Usage</h4>
+              <table style="width:100%">
+              <tr>
+                <th>Total Disk Space</th>
+                <th>Total Used Space</th>
+                <th>Total Free Space</th>
+              </tr>
+              <tr>
+                <td>{{diskDetails.diskUsage.totalDiskSpace}}</td>
+                <td>{{diskDetails.diskUsage.usedDiskSpace}}</td>
+                <td>{{diskDetails.diskUsage.freeDiskSpace}}</td>
+              </tr>
+              </table> 
+
+              <h4>I/O Counters</h4>
+              <table style="width:100%">
+                <tr>
+                  <th>Read Count</th>
+                  <th>Read bytes</th>
+                  <th>Write bytes</th>
+                  <th>Read Time</th>
+                  <th>Write Time</th>
+                </tr>
+                <tr>
+                  <td>{{diskDetails.diskIOCounters.readCount}}</td>
+                  <td>{{diskDetails.diskIOCounters.readbytes}}</td>
+                  <td>{{diskDetails.diskIOCounters.writebytes}}</td>
+                  <td>{{diskDetails.diskIOCounters.readTime}}</td>
+                  <td>{{diskDetails.diskIOCounters.writeTime}}</td>
+                </tr>
+              </table>
+             
+         </ol>
+      {% elif batteryDetails %}
+            <ol class="center2" style="font-size: 20px;">
+              <h6> Charged : {{batteryDetails.charge}}</h6>
+              <h6> Remaining Time : {{batteryDetails.timeleft}}</h6>              
+              <h6> Plugged : {{batteryDetails.plugged}}</h6>
+            </ol>  
+      {% elif ramDetails %}
+            <ol class="center2" style="font-size: 20px;">
+              <h6> Memory Total : {{ramDetails.total}}</h6>
+              <h6> Memory Available : {{ramDetails.available}}</h6>              
+              <h6> Memory Used : {{ramDetails.used}}</h6>
+              <h6> Percent Used : {{ramDetails.percent}}</h6>
+            </ol>        
+      {% else %}
+         <h4>no content available</h4>
+
+      {% endif %}
+  </div>
+</div>
+</body>
+</html>
